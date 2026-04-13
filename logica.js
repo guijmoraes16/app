@@ -35,7 +35,7 @@ async function ResearchWeather() {
     const input = document.getElementById("locationInput").value.trim();
 
     if (!input) {
-        alert("Digite o nome de uma cidade para pesquisar o clima.");
+        alert("É preciso digitar o nome de uma cidade.");
         return;
     }
 
@@ -43,23 +43,25 @@ async function ResearchWeather() {
     const url = `https://wttr.in/${encodeURIComponent(queryLocation)}?format=j1`;
 
     
-    document.getElementById("results").innerHTML = `<p>Buscando clima real para ${input}...</p>`;
+    document.getElementById("results").innerHTML = `<p>Buscando dados climáticos da cidade ${input}...</p>`;
 
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error("Cidade não encontrada ou serviço indisponível");
         }
-
         const data = await response.json();
-        if (!data.current_condition || data.current_condition.length === 0) {
-            throw new Error("Cidade não encontrada. Verifique o nome e tente novamente.");
+
+        if (!data.weather || !data.current_condition || !data.weather.length || !data.current_condition[0]) {
+            throw new Error("Cidade não encontrada ou dados climáticos indisponíveis.");
         }
         const current = data.current_condition[0];
         if (!current.weatherDesc || !current.weatherDesc[0] || !current.weatherDesc[0].value) {
             throw new Error("Dados climáticos indisponíveis para esta cidade.");
         }
         const place = input;
+
+       
 
         document.getElementById("results").innerHTML = `
             <div class="weather-card">
@@ -68,11 +70,12 @@ async function ResearchWeather() {
                     <span class="weather-tag">${current.weatherDesc[0].value}</span>
                 </div>
                 <div class="weather-body">
-                    <p><strong>Temperatura:</strong> ${current.temp_C}°C</p>
-                    <p><strong>Sensação térmica:</strong> ${current.FeelsLikeC}°C</p>
-                    <p><strong>Umidade:</strong> ${current.humidity}%</p>
-                    <p><strong>Vento:</strong> ${current.windspeedKmph} km/h</p>
-                    <p><strong>Probabilidade de chuva:</strong> ${current.chanceofrain || 'N/A'}%</p>
+                    <p><strong>Temperatura🌡️:</strong> ${current.temp_C}°C</p>
+                    <p><strong>Sensação térmica🤔:</strong> ${current.FeelsLikeC}°C</p>
+                    <p><strong>Umidade💧:</strong> ${current.humidity}%</p>
+                    <p><strong>Vento💨:</strong> ${current.windspeedKmph} km/h</p>
+                    <p><strong>Temperatura mínima de hoje📉:</strong> ${data.weather[0].mintempC}°C</p>
+                    <p><strong>Temperatura máxima de hoje📈:</strong> ${data.weather[0].maxtempC}°C</p>
                 </div>
             </div>
         `;
