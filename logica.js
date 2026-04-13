@@ -1,14 +1,14 @@
 const cidades = [
     { nome: "São Paulo", timeZone: "America/Sao_Paulo", gmt: "UTC-3" },
-    { nome: "Rio de Janeiro", timeZone: "America/Sao_Paulo", gmt: "UTC-3" },
+    { nome: "London", timeZone: "Europe/London", gmt: "UTC+0" },
     { nome: "Brasília", timeZone: "America/Sao_Paulo", gmt: "UTC-3" },
-    { nome: "Salvador", timeZone: "America/Bahia", gmt: "UTC-3" },
-    { nome: "Fortaleza", timeZone: "America/Fortaleza", gmt: "UTC-3" },
-    { nome: "Belo Horizonte", timeZone: "America/Sao_Paulo", gmt: "UTC-3" },
+    { nome: "New York", timeZone: "America/New_York", gmt: "UTC-5" },
+    { nome: "Frankfurt", timeZone: "Europe/Berlin", gmt: "UTC+1" },
     { nome: "Manaus", timeZone: "America/Manaus", gmt: "UTC-4" },
     { nome: "Curitiba", timeZone: "America/Sao_Paulo", gmt: "UTC-3" },
-    { nome: "Recife", timeZone: "America/Recife", gmt: "UTC-3" },
-    { nome: "Porto Alegre", timeZone: "America/Sao_Paulo", gmt: "UTC-3" }
+    { nome: "Moscow", timeZone: "Europe/Moscow", gmt: "UTC+3" },
+    { nome: "Tokyo", timeZone: "Asia/Tokyo", gmt: "UTC+9" },
+    { nome: "Sydney", timeZone: "Australia/Sydney", gmt: "UTC+10" }
 ];
 
 function formatLocalTime(timeZone) {
@@ -35,12 +35,14 @@ async function ResearchWeather() {
     const input = document.getElementById("locationInput").value.trim();
 
     if (!input) {
-        alert("Digite uma cidade!");
+        alert("Digite o nome de uma cidade para pesquisar o clima.");
         return;
     }
 
-    const url = `https://wttr.in/${encodeURIComponent(input)}?format=j1`;
+    const queryLocation = input.replace(/\s*-\s*/g, ", ");
+    const url = `https://wttr.in/${encodeURIComponent(queryLocation)}?format=j1`;
 
+    
     document.getElementById("results").innerHTML = `<p>Buscando clima real para ${input}...</p>`;
 
     try {
@@ -50,8 +52,14 @@ async function ResearchWeather() {
         }
 
         const data = await response.json();
+        if (!data.current_condition || data.current_condition.length === 0) {
+            throw new Error("Cidade não encontrada. Verifique o nome e tente novamente.");
+        }
         const current = data.current_condition[0];
-        const place = data.nearest_area?.[0]?.areaName?.[0]?.value || input;
+        if (!current.weatherDesc || !current.weatherDesc[0] || !current.weatherDesc[0].value) {
+            throw new Error("Dados climáticos indisponíveis para esta cidade.");
+        }
+        const place = input;
 
         document.getElementById("results").innerHTML = `
             <div class="weather-card">
@@ -64,6 +72,7 @@ async function ResearchWeather() {
                     <p><strong>Sensação térmica:</strong> ${current.FeelsLikeC}°C</p>
                     <p><strong>Umidade:</strong> ${current.humidity}%</p>
                     <p><strong>Vento:</strong> ${current.windspeedKmph} km/h</p>
+                    <p><strong>Probabilidade de chuva:</strong> ${current.chanceofrain || 'N/A'}%</p>
                 </div>
             </div>
         `;
@@ -77,6 +86,7 @@ async function ResearchWeather() {
 }
 
 renderCityTimes();
+setInterval(renderCityTimes, 1000);
 
 document.getElementById("locationInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") {

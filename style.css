@@ -6,7 +6,7 @@
 body {
   background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
     url("https://imagens.climatempo.com.br/climapress/galeria/2021/12/750x553_29ea60284f3bb54ad7944f1812c15208.jpg") center/cover no-repeat;
-  color: #ffffff;
+  color: #f0f0f0;
   font-family: "Black Ops One", system-ui;
   display: flex;
   flex-direction: column;
@@ -56,7 +56,7 @@ select {
 }
 
 .city-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #22517c 0%, #a80e0e 100%);
   border-radius: 10px;
   padding: 20px;
   margin-top: 20px;
@@ -76,15 +76,6 @@ select {
   line-height: 1.6;
 }
 
-.suggestions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-  padding: 15px;
-  background: rgba(100, 126, 234, 0.1);
-  border-radius: 8px;
-}
 
 .suggestion-btn {
   padding: 10px 15px;
